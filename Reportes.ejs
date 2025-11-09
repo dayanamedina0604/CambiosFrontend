@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="img/Logo.ico" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Bebas Neue', sans-serif;
+    }
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.95); /* Fondo blanco casi sólido */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 1rem;
+  border: 3px solid rgba(234, 179, 8, 0.7); /* 💛 Borde dorado visible */
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+  transition: all 0.4s ease;
+}
+
+/* 🌈 Halo dorado/fucsia exterior */
+.glass-effect::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: inherit;
+  background: linear-gradient(135deg,
+    rgba(241, 183, 10, 0.95),
+    rgba(192, 38, 211, 0.55)
+  );
+  filter: blur(25px);
+  z-index: -1;
+  opacity: 0.6;
+}
+
+.header-banner {
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  overflow: hidden;
+}
+
+
+
+
+  </style>
+</head>
+<body class="relative min-h-screen bg-option-1 flex items-center justify-center min-h-screen">
+        <img src="/public/img/fondoiniciosesion.png" class="absolute inset-0 w-full h-full object-cover -z-10" alt="Fondo inicio sesión">    
+    <div id="logo-container" class="logo-container bg-white"></div> 
+  
+
+
+<!--<div id="step1" class="glass-effect rounded-2xl p-8 shadow-2xl modern-input w-full max-w-2xl mx-auto">-->
+<div class="glass-effect rounded-2xl p-8 shadow-2xl w-[900px] mx-auto relative overflow-visible bg-white/95">
+  <div class="absolute top-0 left-0 w-full h-16 bg-white/70 text-black-600 flex items-center justify-center text-3xl tracking-widest header-banner"
+       style="clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%); font-family: 'Bebas Neue', sans-serif;">
+    REPORTES
+  </div>
+
+    <div class="mt-20 text-center">
+      <p class="text-lg text-gray-500 mb-4">Aquí podrás generar un reporte según tu necesidad. Genéralo y observa tu gran progreso.</p>
+    </div>
+
+    <!-- Selector de tipo de reporte -->
+    <select id="tipoReporteUser" class="w-full p-2 border rounded mb-4 text-lg">
+      <option disabled selected>Selecciona una opción</option>
+      <option>Presupuesto Proyectado</option>
+      <option>Presupuesto actual</option>
+      <option>Presupuesto actual y proyectado</option>
+    </select>
+
+    <!-- Selector de rango de fechas -->
+    <p class="text-lg text-yellow-700 mb-2">Selecciona el rango de fechas para tu reporte</p>
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div>
+        <label for="fechaInicio" class="block text-lg text-black mb-1">Fecha de inicio</label>
+        <input type="date" id="fechaInicio" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-600">
+      </div>
+      <div>
+        <label for="fechaFin" class="block text-lg text-black mb-1">Fecha de finalización</label>
+        <input type="date" id="fechaFin" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-600" disabled>
+      </div>
+    </div>
+
+    <!-- Formato de reporte -->
+    <p class="text-lg text-gray-600 mb-2">¿En qué formato deseas tu reporte? Selecciónalo.</p>
+    <div class="flex items-center gap-3 mb-4">
+      <input type="radio" name="formato" id="pdf" value="pdf" class="accent-red-600">
+      <label for="pdf" class="flex items-center gap-1 text-sm cursor-pointer">
+        <img src="https://img.icons8.com/fluency/24/pdf.png" class="w-5 h-5" alt="PDF"> PDF
+      </label>
+      <input type="radio" name="formato" id="excel" value="excel" class="accent-green-600 ml-4">
+      <label for="excel" class="flex items-center gap-1 text-sm cursor-pointer">
+        <img src="https://img.icons8.com/fluency/24/ms-excel.png" class="w-5 h-5" alt="Excel"> EXCEL
+      </label>
+    </div>
+
+    <!-- Confirmación -->
+    <p class="text-lg text-gray-700 mb-4">¿Todo listo? ok, ¡continuemos!</p>
+
+    <!-- Botones -->
+    <div class="flex flex-row justify-center gap-2">
+      <button id="btnPreview" disabled class="btn w-[300px] bg-fuchsia-600 font-bold py-2 rounded-full transition duration-300 cursor-not-allowed">
+        Preview
+      </button>
+      <button id="btnDescargar" disabled class="btn w-[300px] bg-fuchsia-600  font-bold py-2 rounded-full transition duration-300 cursor-not-allowed">
+        Descargar reporte
+      </button>
+    </div>
+  </div>
+
+  <script>
+     const btnPreview = document.getElementById('btnPreview');
+    const btnDescargar = document.getElementById('btnDescargar');
+    const tipoReporte = document.getElementById('tipoReporteUser');
+    const fechaInicio = document.getElementById('fechaInicio');
+    const fechaFin = document.getElementById('fechaFin');
+    const formatoPdf = document.getElementById('pdf');
+    const formatoExcel = document.getElementById('excel');
+    const select = document.getElementById('tipoReporte');
+    const formatoRadios = document.getElementsByName('formato');
+   
+   
+
+    // Habilitar fecha de fin cuando se selecciona fecha de inicio
+    fechaInicio.addEventListener('change', function() {
+      const fechaSeleccionada = this.value;
+      
+      if (fechaSeleccionada) {
+        fechaFin.disabled = false;
+        fechaFin.min = fechaSeleccionada; // Establece la fecha mínima
+        
+        // Si ya hay una fecha fin seleccionada y es anterior, la limpia
+        if (fechaFin.value && fechaFin.value < fechaSeleccionada) {
+          fechaFin.value = '';
+        }
+      } else {
+        fechaFin.disabled = true;
+        fechaFin.value = '';
+      }
+      
+      validarFormulario();
+    });
+
+    // Validar cuando cambia la fecha de fin
+    fechaFin.addEventListener('change', validarFormulario);
+
+    // Validar cuando cambia el tipo de reporte
+    tipoReporte.addEventListener('change', validarFormulario);
+
+    // Validar cuando se selecciona un formato
+    formatoPdf.addEventListener('change', validarFormulario);
+    formatoExcel.addEventListener('change', validarFormulario);
+
+    function validarFormulario() {
+      const tipoSeleccionado = tipoReporte.value !== 'Selecciona una opción';
+      const fechasCompletas = fechaInicio.value && fechaFin.value;
+      const formatoSeleccionado = formatoPdf.checked || formatoExcel.checked;
+      
+      const formularioValido = tipoSeleccionado && fechasCompletas && formatoSeleccionado;
+      
+      if (formularioValido) {
+        btnPreview.disabled = false;
+        btnDescargar.disabled = false;
+        btnPreview.classList.remove('bg-gray-400', 'cursor-not-allowed');
+        btnDescargar.classList.remove('bg-gray-400', 'cursor-not-allowed');
+        btnPreview.classList.add('bg-black', 'text-white','hover:bg-fuchsia-700', 'cursor-pointer');
+        btnDescargar.classList.add('bg-black', 'text-white', 'hover:bg-yellow-700', 'cursor-pointer');
+      } else {
+        btnPreview.disabled = true;
+        btnDescargar.disabled = true;
+        btnPreview.classList.add('bg-gray-400', 'cursor-not-allowed');
+        btnDescargar.classList.add('bg-gray-400', 'cursor-not-allowed');
+        btnPreview.classList.remove('bg-fuchsia-700', 'hover:bg-fushia-600', 'cursor-pointer');
+        btnDescargar.classList.remove('bg-black', 'text-gray-200', 'hover:bg-gray-800', 'cursor-pointer');
+      }
+    }
+
+    // Funcionalidad de los botones
+    btnPreview.addEventListener('click', function() {
+      if (!this.disabled) {
+        alert(`Vista previa del reporte:\nTipo: ${tipoReporte.value}\nFechas: ${fechaInicio.value} a ${fechaFin.value}\nFormato: ${formatoPdf.checked ? 'PDF' : 'EXCEL'}`);
+      }
+    });
+
+    btnDescargar.addEventListener('click', function() {
+      if (!this.disabled) {
+        alert(`Descargando reporte:\nTipo: ${tipoReporte.value}\nFechas: ${fechaInicio.value} a ${fechaFin.value}\nFormato: ${formatoPdf.checked ? 'PDF' : 'EXCEL'}`);
+      }
+    });
+  </script>
+</body>
+</html>
